@@ -1,7 +1,5 @@
-#include <stddef.h>
+#include <cstddef>
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <iomanip>
 #include "Table.h"
 
@@ -182,7 +180,7 @@ void Table::print_table()
 			cw.resize(table_cells[r].size(), 0);
 		}
 	}
-	//for (int i = 0; i < tableCells[0].size(); i++) cw[i] = 0;
+	
 	for (int r = 1; r < table_cells.size(); r++)
 	{
 		for (int c = 1; c < table_cells[r].size(); c++)
@@ -197,7 +195,7 @@ void Table::print_table()
 	print_spacer(cw);
 	for (int r = 1; r < table_cells.size(); r++)
 	{
-		std::cout << "|";
+		cout << "|";
 		for (int c = 1; c < cw.size(); c++) 
 		{
 			if (table_cells[r].size()<=c)	
@@ -212,16 +210,17 @@ void Table::print_table()
 	//return 0;
 }
 
-string Table::get_cell_result(size_t row, size_t col) 
+string Table::get_cell_result(size_t row, size_t column) 
 {
 	if (table_cells.empty() || row >= table_cells.size()) return "";
-	if (col >= table_cells[row].size()) return "";
-	if (table_cells[row][col].is_calculated()) return table_cells[row][col].get_result();
+	if (column >= table_cells[row].size()) return "";
+	if (table_cells[row][column].is_calculated()) return table_cells[row][column].get_result();
 	// calculate the cell
 	double result = 0;
-	string str = table_cells[row][col].get_value();
-	if (str.empty()) {
-		table_cells[row][col].set_result("");
+	string str = table_cells[row][column].get_value();
+	if (str.empty()) 
+	{
+		table_cells[row][column].set_result("");
 		return "";
 	};
 	// skip all leading whitespaces
@@ -229,7 +228,7 @@ string Table::get_cell_result(size_t row, size_t col)
 	not_string.erase(0, not_string.find_first_not_of("\t\n\v\f\r "));
 	if (not_string.empty()) 
 	{
-		table_cells[row][col].set_result(str);
+		table_cells[row][column].set_result(str);
 		return str;
 	}
 	if (not_string[0] == '=')
@@ -246,18 +245,18 @@ string Table::get_cell_result(size_t row, size_t col)
 		// something else? try to convert to number
 		try 
 		{
-			result = stof(not_string);
+			result = stod(not_string);
 		}
 		catch (exception& e) 
 		{
-			table_cells[row][col].set_result(str);
+			table_cells[row][column].set_result(str);
 			return str;
 		}
 	}
 	if (eval_error) str = "ERROR";
 	else str = to_string(result);
 	eval_error = false;
-	table_cells[row][col].set_result(str);
+	table_cells[row][column].set_result(str);
 	return str;
 }
 
@@ -422,7 +421,7 @@ double Table::eval_factor()
 		column = eval_int_number();
 		try
 		{
-			return stof(get_cell_result(row, column));
+			return stod(get_cell_result(row, column));
 		}
 		catch (std::exception& e)
 		{
@@ -468,5 +467,4 @@ double Table::evaluate_expression()
 		else
 			result -= eval_term();
 	return result;
-
 }

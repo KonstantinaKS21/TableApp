@@ -1,7 +1,6 @@
 #include "Cell.h"
 
 
-
 void Cell::set_value(string input_value)
 {
 	value = input_value;
